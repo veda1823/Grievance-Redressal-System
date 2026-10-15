@@ -110,4 +110,25 @@ class ComplaintController extends Controller
         return redirect()->route('staff.complaints.show', $complaint)
             ->with('success', 'Response added successfully.');
     }
+
+    
+/**
+ * Show complaints submitted by the authenticated student.
+ */
+public function index(): View
+{
+    $complaints = Complaint::where('user_id', auth()->id())
+        ->with('category')
+        ->latest()
+        ->get();
+
+    return view('dashboard', [
+        'totalComplaints' => $complaints->count(),
+        'pendingCount' => $complaints->where('status', 'pending')->count(),
+        'inProgressCount' => $complaints->where('status', 'in_progress')->count(),
+        'resolvedCount' => $complaints->where('status', 'resolved')->count(),
+        'recentComplaints' => $complaints->take(5),
+    ]);
+}
+
 }

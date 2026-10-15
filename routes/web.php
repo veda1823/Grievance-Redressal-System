@@ -33,7 +33,7 @@ Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Student complaint routes.
-    Route::get('/complaints', fn() => 'Coming in Stage 11')->name('complaints.index');
+    Route::get('/complaints', [ComplaintController::class, 'index'])->name('complaints.index');
     Route::get('/complaints/create', [ComplaintController::class, 'create'])->name('complaints.create');
     Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
     Route::get('/complaints/{complaint}', [ComplaintController::class, 'studentShow'])->name('complaints.show');
