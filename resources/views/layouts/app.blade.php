@@ -295,12 +295,12 @@
             </a>
             <div class="nav-links">
                 @auth
-                    <span style="font-size: 0.9rem; color: var(--text-muted);">
-                        Logged in as: <strong>{{ auth()->user()->name }}</strong>
-                    </span>
+                    <a href="{{ route('dashboard') }}" class="nav-link" id="nav-dashboard">Dashboard</a>
+                    <a href="{{ route('complaints.index') }}" class="nav-link" id="nav-complaints">My Complaints</a>
+                    <a href="{{ route('complaints.create') }}" class="nav-link" id="nav-new-complaint">+ New</a>
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
-                        <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">Log Out</button>
+                        <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" id="btn-logout">Log Out</button>
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="nav-link">Log In</a>
