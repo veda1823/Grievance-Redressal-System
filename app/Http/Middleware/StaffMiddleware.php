@@ -1,22 +1,23 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Http\Middleware;
 
-return new class extends Migration
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class StaffMiddleware
 {
-    public function up(): void
+    public function handle(Request $request, Closure $next): Response
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('student');
-        });
-    }
+        if (! $request->user()) {
+            return redirect()->route('login');
+        }
 
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        if (! $request->user()->isStaff()) {
+            abort(403, 'Unauthorized access: This area is reserved for staff.');
+        }
+
+        return $next($request);
     }
-};
+}
