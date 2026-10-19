@@ -20,7 +20,17 @@ class Complaint extends Model
         'description',
         'priority',
         'status',
+        'verified_at',
+        'verified_by',
+        'rejection_reason',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'verified_at' => 'datetime',
+        ];
+    }
 
     /**
      * Get the student who filed the complaint.
@@ -44,5 +54,10 @@ class Complaint extends Model
     public function responses(): HasMany
     {
         return $this->hasMany(ComplaintResponse::class);
+    }
+
+    public function verifier(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 }

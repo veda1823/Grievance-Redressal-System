@@ -284,20 +284,87 @@
             color: var(--text-muted);
             background-color: var(--surface);
         }
+
+        .staff-shell {
+            max-width: 1180px;
+        }
+
+        .staff-kicker {
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .staff-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .staff-stat {
+            padding: 1.15rem;
+        }
+
+        .staff-stat-label {
+            color: var(--text-muted);
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .staff-stat-value {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-top: 0.35rem;
+        }
+
+        .status-badge, .priority-badge, .verification-badge {
+            border: 1px solid;
+            border-radius: 9999px;
+            display: inline-flex;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.22rem 0.6rem;
+            text-transform: capitalize;
+            white-space: nowrap;
+        }
+
+        .status-pending { background: #fff7ed; border-color: #fed7aa; color: #c2410c; }
+        .status-in_progress { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+        .status-resolved { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+        .status-rejected { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+        .priority-low { background: #f0fdf4; border-color: #bbf7d0; color: #15803d; }
+        .priority-medium { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+        .priority-high { background: #fef2f2; border-color: #fecaca; color: #b91c1c; }
+        .verification-badge { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+
+        @media (max-width: 700px) {
+            .staff-filters, .staff-detail-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
         <nav class="navbar">
-            <a href="{{ route('dashboard') }}" class="brand">
+            <a href="{{ auth()->check() && auth()->user()->isStaff() ? route('staff.dashboard') : route('dashboard') }}" class="brand">
                 <span>Grievance Redressal</span>
-                <span class="brand-badge">Student</span>
+                <span class="brand-badge">{{ auth()->check() && auth()->user()->isStaff() ? 'Staff' : 'Student' }}</span>
             </a>
             <div class="nav-links">
                 @auth
-                    <a href="{{ route('dashboard') }}" class="nav-link" id="nav-dashboard">Dashboard</a>
-                    <a href="{{ route('complaints.index') }}" class="nav-link" id="nav-complaints">My Complaints</a>
-                    <a href="{{ route('complaints.create') }}" class="nav-link" id="nav-new-complaint">+ New</a>
+                    @if(auth()->user()->isStaff())
+                        <a href="{{ route('staff.dashboard') }}" class="nav-link">Staff Dashboard</a>
+                    @else
+                        <a href="{{ route('dashboard') }}" class="nav-link" id="nav-dashboard">Dashboard</a>
+                        <a href="{{ route('complaints.index') }}" class="nav-link" id="nav-complaints">My Complaints</a>
+                        <a href="{{ route('complaints.create') }}" class="nav-link" id="nav-new-complaint">+ New</a>
+                    @endif
                     <form action="{{ route('logout') }}" method="POST" style="display: inline;">
                         @csrf
                         <button type="submit" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;" id="btn-logout">Log Out</button>
