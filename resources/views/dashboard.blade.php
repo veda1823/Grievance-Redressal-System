@@ -5,16 +5,16 @@
 @section('content')
 
 {{-- Page Header --}}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
+<div class="mobile-stack" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;">
     <div>
-        <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem;">
+        <h1 class="mobile-heading" style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem;">
             Welcome back, {{ auth()->user()->name }}! 👋
         </h1>
         <p style="color: var(--text-muted); font-size: 0.95rem;">
             Here's an overview of your grievances
         </p>
     </div>
-    <a href="{{ route('complaints.create') }}" class="btn btn-primary" id="btn-submit-complaint">
+    <a href="{{ route('complaints.create') }}" class="btn btn-primary mobile-full-width" id="btn-submit-complaint">
         + Submit New Complaint
     </a>
 </div>
@@ -67,7 +67,7 @@
 {{-- Recent Complaints --}}
 <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);">
 
-    <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+    <div class="mobile-stack" style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
         <h2 style="font-size: 1.05rem; font-weight: 700; margin: 0;">
             Recent Complaints
         </h2>
@@ -88,7 +88,7 @@
     @else
         <div>
             @foreach($recentComplaints as $complaint)
-                <div style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; transition: background 0.15s;" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background=''">
+                <div class="mobile-complaint-row" style="padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 1rem; transition: background 0.15s;" onmouseover="this.style.background='var(--background)'" onmouseout="this.style.background=''">
                     <div style="flex: 1; min-width: 0;">
                         <a href="{{ route('complaints.show', $complaint->id) }}" style="font-weight: 600; color: var(--text-main); text-decoration: none; font-size: 0.95rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="complaint-{{ $complaint->id }}">
                             {{ $complaint->title }}
@@ -97,7 +97,7 @@
                             {{ $complaint->category->name }} &bull; {{ $complaint->created_at->format('M d, Y') }}
                         </div>
                     </div>
-                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0;">
+                    <div class="mobile-badges" style="display: flex; gap: 0.5rem; align-items: center; flex-shrink: 0;">
                         {{-- Priority Badge --}}
                         @php
                             $priorityColors = [
@@ -143,7 +143,7 @@
 {{-- Account Info --}}
 <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow-sm); margin-top: 1.5rem; padding: 1.5rem;">
     <h2 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 1rem;">Account Information</h2>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="mobile-single-column" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
         <div>
             <span style="display: block; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 0.2rem;">Name</span>
             <span style="font-size: 0.95rem; font-weight: 500;">{{ auth()->user()->name }}</span>

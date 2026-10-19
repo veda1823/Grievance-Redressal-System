@@ -61,4 +61,44 @@ class ComplaintSubmissionTest extends TestCase
         $response->assertSessionHasErrors(['category_id', 'title', 'description', 'priority']);
         $this->assertSame(0, Complaint::count());
     }
+
+    public function test_a_student_can_view_all_of_their_complaints_with_filters(): void
+    {
+        $user = User::factory()->create(['role' => 'student']);
+        $category = Category::create(['name' => 'Academic']);
+        Complaint::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Resolved examination issue',
+            'description' => 'The examination issue was resolved by the academic department.',
+            'priority' => 'high',
+            'status' => 'resolved',
+        ]);
+        Complaint::create([
+            'user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Pending transport issue',
+            'description' => 'The transport schedule needs to be reviewed by the department.',
+            'priority' => 'medium',
+            'status' => 'pending',
+        ]);
+        Complaint::create([
+            'user_id' => User::factory()->create(['role' => 'student'])->id,
+            'category_id' => $category->id,
+            'title' => 'Another student complaint',
+            'description' => 'This complaint belongs to a different student account.',
+            'priority' => 'low',
+            'status' => 'pending',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('complaints.index', [
+            'status' => 'resolved',
+            'search' => 'examination',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee('Resolved examination issue');
+        $response->assertDontSee('Pending transport issue');
+        $response->assertDontSee('Another student complaint');
+    }
 }
