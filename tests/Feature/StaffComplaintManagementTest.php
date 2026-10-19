@@ -79,4 +79,76 @@ class StaffComplaintManagementTest extends TestCase
         $this->actingAs($student)->get(route('staff.complaints.show', $complaint))->assertForbidden();
         $this->actingAs($student)->patch(route('staff.complaints.status', $complaint), ['status' => 'resolved'])->assertForbidden();
     }
+
+    public function test_staff_can_filter_the_queue_and_verify_a_complaint(): void
+    {
+        $staff = User::factory()->create(['role' => 'staff']);
+        $student = User::factory()->create(['role' => 'student']);
+        $category = Category::create(['name' => 'Academic']);
+        $complaint = Complaint::create([
+            'user_id' => $student->id,
+            'category_id' => $category->id,
+            'title' => 'Library access issue',
+            'description' => 'The library access card is not working at the entrance.',
+            'priority' => 'high',
+            'status' => 'pending',
+        ]);
+        Complaint::create([
+            'user_id' => $student->id,
+            'category_id' => $category->id,
+            'title' => 'Different complaint',
+            'description' => 'This should not match the search.',
+            'priority' => 'low',
+            'status' => 'resolved',
+        ]);
+
+        $response = $this->actingAs($staff)->get(route('staff.dashboard', [
+            'search' => 'Library access',
+            'status' => 'pending',
+            'priority' => 'high',
+            'verification' => 'unverified',
+        ]));
+
+        $response->assertOk();
+        $response->assertSee($complaint->title);
+        $response->assertDontSee('Different complaint');
+
+        $verifyResponse = $this->actingAs($staff)->patch(route('staff.complaints.verify', $complaint));
+
+        $verifyResponse->assertRedirect(route('staff.complaints.show', $complaint));
+        $this->assertDatabaseHas('complaints', [
+            'id' => $complaint->id,
+            'verified_by' => $staff->id,
+        ]);
+    }
+
+    public function test_rejected_complaints_require_and_show_a_rejection_reason(): void
+    {
+        $staff = User::factory()->create(['role' => 'staff']);
+        $student = User::factory()->create(['role' => 'student']);
+        $category = Category::create(['name' => 'Academic']);
+        $complaint = Complaint::create([
+            'user_id' => $student->id,
+            'category_id' => $category->id,
+            'title' => 'Duplicate request',
+            'description' => 'This request duplicates a previously resolved complaint.',
+            'priority' => 'medium',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($staff)
+            ->patch(route('staff.complaints.status', $complaint), ['status' => 'rejected'])
+            ->assertSessionHasErrors('rejection_reason');
+
+        $this->actingAs($staff)
+            ->patch(route('staff.complaints.status', $complaint), [
+                'status' => 'rejected',
+                'rejection_reason' => 'This complaint duplicates an existing resolved request.',
+            ])
+            ->assertRedirect(route('staff.complaints.show', $complaint));
+
+        $studentResponse = $this->actingAs($student)->get(route('complaints.show', $complaint));
+
+        $studentResponse->assertSee('This complaint duplicates an existing resolved request.');
+    }
 }

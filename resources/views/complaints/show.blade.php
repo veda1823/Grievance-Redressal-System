@@ -22,6 +22,12 @@
             <p style="white-space: pre-wrap; color: var(--text-muted);">{{ $complaint->description }}</p>
         </div>
 
+        @if($complaint->status === 'rejected' && $complaint->rejection_reason)
+            <div class="alert alert-danger" style="margin-top: 1.5rem; margin-bottom: 0;">
+                <span><strong>Reason for rejection:</strong> {{ $complaint->rejection_reason }}</span>
+            </div>
+        @endif
+
         <div style="border-top: 1px solid var(--border); padding-top: 1.25rem; margin-top: 1.5rem;">
             <h2 style="font-size: 1rem; margin-bottom: 1rem;">Responses</h2>
             @forelse($complaint->responses as $response)

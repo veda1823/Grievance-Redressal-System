@@ -26,6 +26,9 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+
+    Route::get('/staff/login', [AuthController::class, 'showStaffLogin'])->name('staff.login');
+    Route::post('/staff/login', [AuthController::class, 'staffLogin']);
 });
 
 // Authenticated Student Routes
@@ -48,6 +51,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'staff'])->group(function () {
     Route::get('/staff', [ComplaintController::class, 'staffIndex'])->name('staff.dashboard');
     Route::get('/staff/complaints/{complaint}', [ComplaintController::class, 'staffShow'])->name('staff.complaints.show');
+    Route::patch('/staff/complaints/{complaint}/verify', [ComplaintController::class, 'verify'])->name('staff.complaints.verify');
     Route::patch('/staff/complaints/{complaint}/status', [ComplaintController::class, 'updateStatus'])->name('staff.complaints.status');
     Route::post('/staff/complaints/{complaint}/responses', [ComplaintController::class, 'storeResponse'])->name('staff.complaints.responses.store');
 });

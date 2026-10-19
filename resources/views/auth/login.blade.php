@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
-@section('title', 'Student Login')
+@section('title', 'Login')
 
 @section('content')
 <div class="auth-container">
     <div class="auth-header">
-        <h1>Student Login</h1>
-        <p>Access your student portal to manage complaints</p>
+        <h1>Login</h1>
+        <p>Access your portal to manage complaints</p>
     </div>
 
     <form method="POST" action="{{ route('login') }}">
@@ -22,7 +22,7 @@
                 value="{{ old('email') }}"
                 required
                 autofocus
-                placeholder="student@example.com"
+                placeholder="you@example.com"
             >
             @error('email')
                 <div class="invalid-feedback">{{ $message }}</div>
@@ -58,6 +58,8 @@
 
     <div class="auth-footer">
         Don't have an account? <a href="{{ route('register') }}">Register as Student</a>
+        <br>
+        Staff member? <a href="{{ route('staff.login') }}">Staff Login</a>
     </div>
 </div>
 @endsection
