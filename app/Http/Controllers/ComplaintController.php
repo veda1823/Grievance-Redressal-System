@@ -115,20 +115,26 @@ class ComplaintController extends Controller
 /**
  * Show complaints submitted by the authenticated student.
  */
-public function index(): View
+public function index(Request $request): View
 {
-    $complaints = Complaint::where('user_id', auth()->id())
-        ->with('category')
-        ->latest()
-        ->get();
-
-    return view('dashboard', [
-        'totalComplaints' => $complaints->count(),
-        'pendingCount' => $complaints->where('status', 'pending')->count(),
-        'inProgressCount' => $complaints->where('status', 'in_progress')->count(),
-        'resolvedCount' => $complaints->where('status', 'resolved')->count(),
-        'recentComplaints' => $complaints->take(5),
+    $validated = $request->validate([
+        'status' => ['nullable', 'in:pending,in_progress,resolved,rejected'],
+        'search' => ['nullable', 'string', 'max:255'],
     ]);
+
+    $complaints = Complaint::where('user_id', $request->user()->id)
+        ->with('category')
+        ->when($validated['status'] ?? null, function ($query, string $status) {
+            $query->where('status', $status);
+        })
+        ->when($validated['search'] ?? null, function ($query, string $search) {
+            $query->where('title', 'like', '%' . $search . '%');
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('complaints.index', compact('complaints'));
 }
 
 }
