@@ -63,9 +63,26 @@
     </div>
 
     @if($complaints->hasPages())
-        <div style="margin-top: 1.25rem;">
-            {{ $complaints->links() }}
-        </div>
+        <nav aria-label="Complaint pages" style="display: flex; justify-content: center; align-items: center; gap: 0.75rem; margin-top: 1.25rem; flex-wrap: wrap;">
+            @if($complaints->onFirstPage())
+                <span aria-disabled="true" style="display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--border); border-radius: 8px; color: #cbd5e1; background: #f8fafc; font-size: 1.15rem; line-height: 1;">&larr;</span>
+            @else
+                <a href="{{ $complaints->previousPageUrl() }}" rel="prev" aria-label="Go to previous page" style="display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--border); border-radius: 8px; color: var(--primary); background: var(--surface); font-size: 1.15rem; line-height: 1; text-decoration: none; transition: background-color 0.15s, border-color 0.15s;" onmouseover="this.style.background='var(--primary-light)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='var(--surface)'; this.style.borderColor='var(--border)'">&larr;</a>
+            @endif
+
+            <span style="min-width: 6.5rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">
+                Page {{ $complaints->currentPage() }} of {{ $complaints->lastPage() }}
+            </span>
+
+            @if($complaints->hasMorePages())
+                <a href="{{ $complaints->nextPageUrl() }}" rel="next" aria-label="Go to next page" style="display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--border); border-radius: 8px; color: var(--primary); background: var(--surface); font-size: 1.15rem; line-height: 1; text-decoration: none; transition: background-color 0.15s, border-color 0.15s;" onmouseover="this.style.background='var(--primary-light)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.background='var(--surface)'; this.style.borderColor='var(--border)'">&rarr;</a>
+            @else
+                <span aria-disabled="true" style="display: inline-flex; align-items: center; justify-content: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--border); border-radius: 8px; color: #cbd5e1; background: #f8fafc; font-size: 1.15rem; line-height: 1;">&rarr;</span>
+            @endif
+        </nav>
+        <p style="text-align: center; margin-top: 0.5rem; color: var(--text-muted); font-size: 0.75rem;">
+            Showing {{ $complaints->firstItem() }}–{{ $complaints->lastItem() }} of {{ $complaints->total() }} complaints
+        </p>
     @endif
 </div>
 @endsection
